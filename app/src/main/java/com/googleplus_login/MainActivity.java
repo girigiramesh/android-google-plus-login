@@ -71,32 +71,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btnSignIn.setScopes(gso.getScopeArray());
     }
 
-    private void signIn() {
-        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-        startActivityForResult(signInIntent, RC_SIGN_IN);
-    }
-
-
-    private void signOut() {
-        Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
-                new ResultCallback<Status>() {
-                    @Override
-                    public void onResult(Status status) {
-                        updateUI(false);
-                    }
-                });
-    }
-
-    private void revokeAccess() {
-        Auth.GoogleSignInApi.revokeAccess(mGoogleApiClient).setResultCallback(
-                new ResultCallback<Status>() {
-                    @Override
-                    public void onResult(Status status) {
-                        updateUI(false);
-                    }
-                });
-    }
-
     private void handleSignInResult(GoogleSignInResult result) {
         Log.d(TAG, "handleSignInResult:" + result.isSuccess());
         if (result.isSuccess()) {
@@ -109,8 +83,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Uri personPhotoUrl = acct.getPhotoUrl();
             String email = acct.getEmail();
 
-            Log.e(TAG, "Name: " + personName + ", email: " + email
-                    + ", Image: " + personPhotoUrl);
+            Log.e(TAG, "Name: " + personName + ", email: " + email + ", Image: " + personPhotoUrl);
 
             txtName.setText(personName);
             txtEmail.setText(email);
@@ -129,20 +102,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
-    public void onClick(View v) {
-        int id = v.getId();
-
-        switch (id) {
+    public void onClick(View view) {
+        switch (view.getId()) {
             case R.id.btn_sign_in:
-                signIn();
+                Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+                startActivityForResult(signInIntent, RC_SIGN_IN);
                 break;
 
             case R.id.btn_sign_out:
-                signOut();
+                mGoogleApiClient = App.getInstance().getClient();
+                Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(new ResultCallback<Status>() {
+                    @Override
+                    public void onResult(@NonNull Status status) {
+                        updateUI(false);
+                    }
+                });
                 break;
 
             case R.id.btn_revoke_access:
-                revokeAccess();
+                Auth.GoogleSignInApi.revokeAccess(mGoogleApiClient).setResultCallback(new ResultCallback<Status>() {
+                    @Override
+                    public void onResult(@NonNull Status status) {
+                        updateUI(false);
+                    }
+                });
                 break;
         }
     }
@@ -176,7 +159,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             showProgressDialog();
             opr.setResultCallback(new ResultCallback<GoogleSignInResult>() {
                 @Override
-                public void onResult(GoogleSignInResult googleSignInResult) {
+                public void onResult(@NonNull GoogleSignInResult googleSignInResult) {
                     hideProgressDialog();
                     handleSignInResult(googleSignInResult);
                 }
@@ -197,7 +180,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             mProgressDialog.setMessage(getString(R.string.loading));
             mProgressDialog.setIndeterminate(true);
         }
-
         mProgressDialog.show();
     }
 
