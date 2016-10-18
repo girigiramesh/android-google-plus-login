@@ -2,6 +2,7 @@ package com.googleplus_login;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -105,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Log.e(TAG, "display name: " + acct.getDisplayName());
 
             String personName = acct.getDisplayName();
-            String personPhotoUrl = acct.getPhotoUrl().toString();
+            Uri personPhotoUrl = acct.getPhotoUrl();
             String email = acct.getEmail();
 
             Log.e(TAG, "Name: " + personName + ", email: " + email
